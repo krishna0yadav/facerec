@@ -9,19 +9,15 @@ def home_view(request):
 
 def save_licence_view(request):
 	if request.method=='POST':
-		s=request.POST['licencepic']
-		methods.getI420FromBase64(s,'lpic')
+		licencepic=request.POST['licencepic']
+		userpic=request.POST['userpic']
+		methods.getI420FromBase64(licencepic,'lpic')
+		methods.getI420FromBase64(userpic,'vpic')
 		return redirect('/verify/')
 	return redirect(request, '/')
 
 def verify_view(request):
-	if request.method=='POST':
-		s=request.POST['verifypic']
-		methods.getI420FromBase64(s,'vpic')
-		context=methods.match_faces()
-		print(context)
-		return render(request, 'verify.html', context)
-	context={'results':False,'face_distances':0, 'status':''}
+	context=methods.match_faces()
 	print(context)
 	return render(request, 'verify.html', context)
 

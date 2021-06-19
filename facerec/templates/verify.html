@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>Verification</title>
 	{% load static %}
-	<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
-	<script type="text/javascript" src="{% static '/webcam-easy-min.js' %}"></script>
-	<script type="module" src="{% static '/js.cookie.mjs' %}">
-	</script>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/demo1.css">
+	<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon"></script>
+	<title>Verification</title>
 </head>
 <body>
 	<h1>Verify</h1>
@@ -16,53 +15,27 @@
 		{{ face_distances }}<hr>
 		{{ status }}
 	</h2>
-	<video id="webcam" autoplay playsinline width="640" height="480"></video>
-	<canvas id="canvas" class="d-none"></canvas>
-	<audio id="snapSound" src="{% static '/snap.wav' %}" preload = "auto"></audio>
-	<hr>
-	<button onclick="startcam()">Start Cam</button>
-	<hr> 
-	<button onclick="takesnap()">Take Snap</button>
-	<a href="#" id="download-photo" download="selfie.png" target="_blank" title="Save Photo">file_download</a>
-	<form method="post" action=".">{% csrf_token %}
-		<label for="verifypic">verify pic</label>
-		<textarea height='600' width='600' id="verifypic" name="verifypic"></textarea>
-		<input type="submit" value="Submit"/>
-	</form>
-	<script type="text/javascript">
-		const webcamElement = document.getElementById('webcam');
-		const canvasElement = document.getElementById('canvas');
-		const snapSoundElement = document.getElementById('snapSound');
-		const webcam = new Webcam(webcamElement, 'user', canvasElement, snapSoundElement);
-		function startcam(){
-			webcam.start()
-				.then(result =>{
-    				console.log("webcam started");
-				})
-				.catch(err => {
-    				console.log(err);
-				});
-		}
-		// function getCookie(name) {
-		//     let cookieValue = null;
-		//     if (document.cookie && document.cookie !== '') {
-		//         const cookies = document.cookie.split(';');
-		//         for (let i = 0; i < cookies.length; i++) {
-		//             const cookie = cookies[i].trim();
-		//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-		//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-		//                 break;
-		//             }
-		//         }
-		//     }
-		//     alert(cookieValue);
-		//     return cookieValue;
-		// }
-		
-		function takesnap(){
-			document.getElementById('verifypic').value=webcam.snap();
-			//webcam.stop();
-		}
-	</script>
+	<ul style="margin: 0; padding: 0; overflow:hidden; background-color:black; list-style-type: none;">
+		<li>
+			<div class="contentarea" style = "float: left; width: 50%; border: solid 2px yellow">
+		        <div class = "demo1">
+		            <div class = "demo2">
+		                <p class = "headdiv"> <b>LICENCE PIC</b></p>
+		                PIC HERE
+		            </div>
+		        </div>
+		    </div>
+		</li>
+		<li>
+		    <div class="contentarea" style = "float: left; width: 50%; border: solid 2px yellow">
+		        <div class = "demo1">
+		            <div class = "demo2">
+		                <p class = "headdiv"> <b>USER PIC</b></p>
+		                PIC HERE
+		            </div>
+		        </div>
+		    </div>
+		</li>
+	</ul>
 </body>
 </html>

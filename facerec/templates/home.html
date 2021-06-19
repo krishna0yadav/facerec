@@ -1,29 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>Licence Capture</title>
 	{% load static %}
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/static/demo1.css">
 	<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
 	<script type="text/javascript" src="{% static '/webcam-easy-min.js' %}"></script>
-	<script type="module" src="{% static '/js.cookie.mjs' %}">
-	</script>
+	<title>Licence Capture</title>
+<!-- 	<script type="module" src="{% static '/js.cookie.mjs' %}">
+	</script> -->
 </head>
 <body>
-	<video id="webcam" autoplay playsinline width="640" height="480"></video>
-	<canvas id="canvas" class="d-none"></canvas>
+	<ul style="margin: 0; padding: 0; overflow:hidden; background-color:black; list-style-type: none;">
+		<li>
+			<div class="contentarea" style = "float: left; width: 50%; border: solid 2px yellow">
+		        <div class = "demo1">
+		            <div class = "demo2">
+		                <p class = "headdiv"> <b>VEHICLE USER AUTHENTICATION SYSTEM</b></p>
+		                <div class="imgdiv">
+		                    <img src="img1.png">
+		                    <img src="img2.jpg">
+		                </div>
+		                <div class="instructionsdiv"> <p><b>
+		                    STEP 1 :- Store your government authorized driving license picture into the system for verfication by clicking STORE button.
+		                    </b><br><br><br><b>
+		                    STEP 2 :- The system will verify your face against the driving license already stored  in the system by clicking a picture when VERIFY button is clicked.
+		                </b></p></div>
+		                <div class="buttonsdiv">
+		                    <button class="button" id="storebutton" disabled>STORE</button>
+		                    <button class="button" id="verifybutton" disabled>VERIFY</button>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</li>
+		<li>
+		    <div class="contentarea" style = "float: left; width: 50%; border: solid 2px blue">
+		        <div class="demo1">
+		            <div class="demo2">
+		                <div class="camera" id="cameraframe" style="border: solid 2px blue;">
+		                    <video id="video" style="display:block; margin: 0 auto;" width="480" height="360" controls autoplay>Video stream not available.</video>
+		                    <div class="buttonsdiv">
+		                        <button class="button" id="startbutton">Take photo</button>
+		                        <button class="button" id="resetbutton">Reset</button>
+		                    </div>
+		                    <canvas id="canvas" hidden></canvas>
+		                </div>
+		            </div>
+		            
+		        </div>
+		        
+		    </div>
+		</li>
+	</ul>
+	<!-- <canvas id="canvas" class="d-none"></canvas>
 	<audio id="snapSound" src="{% static '/snap.wav' %}" preload = "auto"></audio>
 	<hr>
 	<button onclick="startcam()">Start Cam</button>
 	<hr> 
 	<button onclick="takesnap()">Take Snap</button>
-	<a href="#" id="download-photo" download="selfie.png" target="_blank" title="Save Photo">file_download</a>
+	<a href="#" id="download-photo" download="selfie.png" target="_blank" title="Save Photo">file_download</a> -->
 	<form method="post" action="/save-licence/">{% csrf_token %}
 		<label for="licencepic">licence pic</label>
 		<textarea height='600' width='600' id="licencepic" name="licencepic"></textarea>
-		<input type="submit" value="Submit"/>
+		<label for="userpic">user pic</label>
+		<textarea height='600' width='600' id="userpic" name="userpic"></textarea>
+		<input type="submit" id="submitbutton" value="Submit"/>
 	</form>
-	<script type="text/javascript">
+</body>
+<!-- 	<script type="text/javascript">
 		const webcamElement = document.getElementById('webcam');
 		const canvasElement = document.getElementById('canvas');
 		const snapSoundElement = document.getElementById('snapSound');
@@ -37,7 +83,133 @@
     				console.log(err);
 				});
 		}
-		// function getCookie(name) {
+		function takesnap(){
+			document.getElementById('licencepic').value=webcam.snap();
+			//webcam.stop();
+		}
+	</script> -->
+	<script>
+    /* JS comes here */
+    (function() {
+
+        var width = document.getElementById('video').getAttribute('width'); // We will scale the photo width to this
+        var height = document.getElementById('video').getAttribute('height');; // This will be computed based on the input stream
+        var storebuttonclicked=false;
+        var streaming = false;
+        var video = null;
+        var canvas = null;
+        var startbutton = null;
+        var storebutton=null;
+        var verifybutton=null;
+        var licencepic=null;
+        var userpic=null;
+        var submitbutton=null;
+
+        function startup() {
+            video = document.getElementById('video');
+            canvas = document.getElementById('canvas');
+            startbutton = document.getElementById('startbutton');
+            resetbutton = document.getElementById('resetbutton');
+            storebutton = document.getElementById('storebutton');
+        	verifybutton = document.getElementById('verifybutton');
+        	licencepic = document.getElementById('licencepic');
+        	userpic = document.getElementById('userpic');
+        	submitbutton = document.getElementById('submitbutton');
+
+
+
+            navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                })
+                .then(function(stream) {
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(function(err) {
+                    console.log("An error occurred: " + err);
+                });
+
+            video.addEventListener('canplay', function(ev) {
+                if (!streaming) {
+                    height = video.videoHeight / (video.videoWidth / width);
+
+                    if (isNaN(height)) {
+                        height = width / (4 / 3);
+                    }
+                    video.setAttribute('width', width);
+                    video.setAttribute('height', height);
+                    canvas.setAttribute('width', width);
+                    canvas.setAttribute('height', height);
+                    streaming = true;
+                }
+            }, false);
+
+            startbutton.addEventListener('click', function(ev) {
+                takepicture();
+                if(storebuttonclicked){
+                	storebutton.disabled=false;
+                	verifybutton.disabled=false;
+                }
+                else{
+                	storebutton.disabled=false;
+                }
+                startbutton.disabled=true;
+                ev.preventDefault();
+            }, false);
+
+            resetbutton.addEventListener('click', function(ev) {
+                clearphoto();
+                startbutton.disabled=false;
+                storebutton.disabled=true;
+                verifybutton.disabled=true;
+                ev.preventDefault();
+            }, false);
+
+            storebutton.addEventListener('click', function(ev) {
+                licencepic.value=canvas.toDataURL('image/png');
+                storebuttonclicked=true;
+                resetbutton.click();
+                ev.preventDefault();
+            }, false);
+
+            verifybutton.addEventListener('click', function(ev) {
+                userpic.value=canvas.toDataURL('image/png');
+                submitbutton.click();
+                ev.preventDefault();
+            }, false);
+
+            clearphoto();
+        }
+
+
+        function clearphoto() {
+            var context = canvas.getContext('2d');
+            context.fillStyle = "#AAA";
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            var data = canvas.toDataURL('image/png');
+            video.play();
+        }
+
+        function takepicture() {
+            var context = canvas.getContext('2d');
+            if (width&&height) {
+                canvas.width = width;
+                canvas.height = height;
+                video.pause();
+                context.drawImage(video, 0, 0, width, height);
+
+                var data = canvas.toDataURL('image/png');
+            } else {
+                clearphoto();
+            }
+        }
+
+        window.addEventListener('load', startup, false);
+    })();
+    </script>
+</html>
+<!-- 		// function getCookie(name) {
 		//     let cookieValue = null;
 		//     if (document.cookie && document.cookie !== '') {
 		//         const cookies = document.cookie.split(';');
@@ -51,12 +223,4 @@
 		//     }
 		//     alert(cookieValue);
 		//     return cookieValue;
-		// }
-		
-		function takesnap(){
-			document.getElementById('licencepic').value=webcam.snap();
-			//webcam.stop();
-		}
-	</script>
-</body>
-</html>
+		// } -->
