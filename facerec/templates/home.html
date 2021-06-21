@@ -40,7 +40,7 @@
 		        <div class="demo1">
 		            <div class="demo2">
 		                <div class="camera" id="cameraframe" style="border: solid 2px blue;">
-		                    <video id="video" style="display:block; margin: 0 auto;" width="480" height="360" controls autoplay>Video stream not available.</video>
+		                    <video id="video" style="display:block; margin: 0 auto;" width="480" height="360" autoplay muted>Video stream not available.</video>
 		                    <div class="buttonsdiv">
 		                        <button class="button" id="startbutton">Take photo</button>
 		                        <button class="button" id="resetbutton">Reset</button>
@@ -62,11 +62,11 @@
 	<button onclick="takesnap()">Take Snap</button>
 	<a href="#" id="download-photo" download="selfie.png" target="_blank" title="Save Photo">file_download</a> -->
 	<form method="post" action="/save-licence/">{% csrf_token %}
-		<label for="licencepic">licence pic</label>
-		<textarea height='600' width='600' id="licencepic" name="licencepic"></textarea>
-		<label for="userpic">user pic</label>
-		<textarea height='600' width='600' id="userpic" name="userpic"></textarea>
-		<input type="submit" id="submitbutton" value="Submit"/>
+		<label for="licencepic" hidden>licence pic</label>
+		<textarea height='600' width='600' id="licencepic" name="licencepic" hidden></textarea>
+		<label for="userpic" hidden>user pic</label>
+		<textarea height='600' width='600' id="userpic" name="userpic" hidden></textarea>
+		<input type="submit" id="submitbutton" value="Submit" hidden/>
 	</form>
 </body>
 <!-- 	<script type="text/javascript">
@@ -188,7 +188,10 @@
             context.fillStyle = "#AAA";
             context.fillRect(0, 0, canvas.width, canvas.height);
             var data = canvas.toDataURL('image/png');
-            video.play();
+            try{video.play();}
+            catch(e){
+            	console.log(e);
+            }
         }
 
         function takepicture() {
