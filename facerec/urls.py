@@ -25,4 +25,6 @@ urlpatterns = [
     path('save-licence/', views.save_licence_view, name='save_licence_view'),
     path('verify/', views.verify_view, name='verify_view'),
     url('favicon.ico',RedirectView.as_view(url='/static/favicon.ico')),
+    url('img1.png',RedirectView.as_view(url='/static/img1.png')),
+    url('img2.jpg',RedirectView.as_view(url='/static/img2.jpg')),
 ]
